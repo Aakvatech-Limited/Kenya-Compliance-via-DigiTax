@@ -1,7 +1,7 @@
 app_name = "kenya_compliance_via_digitax"
-app_title = "Kenya Compliance Via Digitax"
+app_title = "Kenya Compliance Via DigiTax"
 app_publisher = "Navari LTD"
-app_description = "About This app works to integrate ERPNext with KRA\'s eTIMS via Digitax to allow for the sharing of information with the revenue authority."
+app_description = "About This app works to integrate ERPNext with KRA's eTIMS via DigiTax to allow for the sharing of information with the revenue authority."
 app_email = "support@navari.co.ke"
 app_license = "agpl-3.0"
 
@@ -15,7 +15,7 @@ app_license = "agpl-3.0"
 # 	{
 # 		"name": "kenya_compliance_via_digitax",
 # 		"logo": "/assets/kenya_compliance_via_digitax/logo.png",
-# 		"title": "Kenya Compliance Via Digitax",
+# 		"title": "Kenya Compliance Via DigiTax",
 # 		"route": "/kenya_compliance_via_digitax",
 # 		"has_permission": "kenya_compliance_via_digitax.api.permission.has_app_permission"
 # 	}
@@ -252,4 +252,3 @@ require_type_annotated_api_methods = True
 # ------------
 # List of apps whose translatable strings should be excluded from this app's translations.
 # ignore_translatable_strings_from = []
-
