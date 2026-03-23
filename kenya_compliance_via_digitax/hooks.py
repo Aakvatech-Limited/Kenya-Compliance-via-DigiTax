@@ -5,6 +5,7 @@ app_description = "About This app works to integrate ERPNext with KRA's eTIMS vi
 app_email = "support@navari.co.ke"
 app_license = "agpl-3.0"
 
+
 # Apps
 # ------------------
 
@@ -43,8 +44,18 @@ app_license = "agpl-3.0"
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-# doctype_js = {"doctype" : "public/js/doctype.js"}
-# doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
+doctype_js = {
+    "Sales Invoice": "kenya_compliance_via_digitax/overrides/client/sales_invoice.js",
+    "Customer": "kenya_compliance_via_digitax/overrides/client/customer.js",
+    "Item": "kenya_compliance_via_digitax/overrides/client/items.js",
+}
+
+doctype_list_js = {
+    "Item": "kenya_compliance_via_digitax/overrides/client/items_list.js",
+    "Sales Invoice": "kenya_compliance_via_digitax/overrides/client/sales_invoice_list.js",
+    "Customer": "kenya_compliance_via_digitax/overrides/client/customer_list.js",
+}
+
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
 
@@ -132,13 +143,52 @@ app_license = "agpl-3.0"
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-# 	}
-# }
+
+doc_events = {
+    # 	"*": {
+    # 		"on_update": "method",
+    # 		"on_cancel": "method",
+    # 		"on_trash": "method"
+    # 	}
+    "Sales Invoice": {
+        "on_update": [
+            "kenya_compliance_via_digitax.kenya_compliance_via_digitax.utils.after_save_"
+        ],
+        "on_submit": [
+            "kenya_compliance_via_digitax.kenya_compliance_via_digitax.overrides.server.sales_invoice.on_submit"
+        ],
+        "validate": [
+            "kenya_compliance_via_digitax.kenya_compliance_via_digitax.overrides.server.shared_overrides.validate"
+        ],
+        "before_cancel": [
+            "kenya_compliance_via_digitax.kenya_compliance_via_digitax.overrides.server.sales_invoice.before_cancel"
+        ],
+        "on_update_after_submit": [
+            "kenya_compliance_via_digitax.kenya_compliance_via_digitax.utils.after_save_"
+        ],
+    },
+    "Item": {
+        "validate": [
+            "kenya_compliance_via_digitax.kenya_compliance_via_digitax.overrides.server.item.validate"
+        ],
+        "on_update": [
+            "kenya_compliance_via_digitax.kenya_compliance_via_digitax.overrides.server.item.on_update"
+        ],
+        "on_trash": "kenya_compliance_via_digitax.kenya_compliance_via_digitax.overrides.server.item.prevent_item_deletion",
+    },
+    "Customer": {
+        "after_save": [
+            "kenya_compliance_via_digitax.kenya_compliance_via_digitax.overrides.server.customer.after_save"
+        ],
+        "validate": [
+            "kenya_compliance_via_digitax.kenya_compliance_via_digitax.overrides.server.customer.validate"
+        ],
+        "after_insert": [
+            "kenya_compliance_via_digitax.kenya_compliance_via_digitax.overrides.server.customer.after_insert"
+        ],
+    },
+}
+
 
 # Scheduled Tasks
 # ---------------
@@ -252,3 +302,6 @@ require_type_annotated_api_methods = True
 # ------------
 # List of apps whose translatable strings should be excluded from this app's translations.
 # ignore_translatable_strings_from = []
+
+
+fixtures = [{"doctype": "eTims Routes"}]

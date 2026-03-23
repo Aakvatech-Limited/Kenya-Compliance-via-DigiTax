@@ -1,4 +1,4 @@
-### Kenya Compliance Via Digitax
+### Kenya Compliance Via DigiTax
 
 About This app works to integrate ERPNext with KRA\'s eTIMS via Digitax to allow for the sharing of information with the revenue authority.
 
