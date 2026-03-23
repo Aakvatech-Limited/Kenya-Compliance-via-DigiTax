@@ -9,6 +9,10 @@ readme = "README.md"
 dynamic = ["version"]
 dependencies = [
     # "frappe~=16.0.0" # Installed and managed by bench.
+    "aiohttp==3.9.1",
+    "deprecation==2.1.0",
+    "qrcode==7.4.2",
+    "bs4"
 ]
 
 [build-system]

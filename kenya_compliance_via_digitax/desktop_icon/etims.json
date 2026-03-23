@@ -1,0 +1,21 @@
+{
+ "app": "kenya_compliance_via_digitax",
+ "creation": "2026-02-20 09:05:58.525652",
+ "docstatus": 0,
+ "doctype": "Desktop Icon",
+ "hidden": 0,
+ "icon": "square-star",
+ "icon_type": "Link",
+ "idx": 0,
+ "label": "eTims",
+ "link_to": "eTims",
+ "link_type": "Workspace Sidebar",
+ "logo_url": "/assets/kenya_compliance_via_digitax/icon-etims.png",
+ "modified": "2026-02-20 13:36:05.630797",
+ "modified_by": "Administrator",
+ "name": "eTims",
+ "owner": "Administrator",
+ "restrict_removal": 0,
+ "roles": [],
+ "standard": 1
+}

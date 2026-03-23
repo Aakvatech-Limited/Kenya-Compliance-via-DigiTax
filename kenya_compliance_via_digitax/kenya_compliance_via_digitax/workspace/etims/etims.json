@@ -1,0 +1,223 @@
+{
+ "app": "kenya_compliance_via_digitax",
+ "charts": [],
+ "content": "[{\"id\":\"jBgrxjYlWC\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h3\\\">eTims Integration</span>\",\"col\":12}},{\"id\":\"hwu6nYvreH\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Etims Notices\",\"col\":4}},{\"id\":\"CXDiSrwkwp\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Integration Request\",\"col\":4}},{\"id\":\"vymsDT5M2F\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Error Log\",\"col\":4}},{\"id\":\"i9DUY1hAFx\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Etims Settings\",\"col\":4}},{\"id\":\"mndOsAy5ib\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"XXTTE8Xt9m\",\"type\":\"card\",\"data\":{\"card_name\":\"Setup & Masters\",\"col\":4}},{\"id\":\"_CSWypHqbW\",\"type\":\"card\",\"data\":{\"card_name\":\"Codes\",\"col\":4}},{\"id\":\"jVEV5FLhAB\",\"type\":\"card\",\"data\":{\"card_name\":\"Item Information\",\"col\":4}}]",
+ "creation": "2026-03-23 13:02:38.997054",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "grid",
+ "idx": 0,
+ "indicator_color": "green",
+ "is_hidden": 0,
+ "label": "eTims",
+ "link_type": "DocType",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Codes",
+   "link_count": 4,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "eTims Packaging Unit",
+   "link_count": 0,
+   "link_to": "eTims Packaging Unit",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "eTims Unit of Quantity",
+   "link_count": 0,
+   "link_to": "eTims Unit of Quantity",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "eTims Country of Origin",
+   "link_count": 0,
+   "link_to": "eTims Country of Origin",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "eTims Taxation Type",
+   "link_count": 0,
+   "link_to": "eTims Taxation Type",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Item Information",
+   "link_count": 4,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "eTims Item Classification",
+   "link_count": 0,
+   "link_to": "eTims Item Classification",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "eTims Product Type",
+   "link_count": 0,
+   "link_to": "eTims Product Type",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "eTims Item Type",
+   "link_count": 0,
+   "link_to": "eTims Item Type",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Item Tax Template",
+   "link_count": 0,
+   "link_to": "Item Tax Template",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Setup & Masters",
+   "link_count": 5,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "eTims Settings",
+   "link_count": 0,
+   "link_to": "eTims Settings",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "eTims Routes",
+   "link_count": 0,
+   "link_to": "eTims Routes",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Item",
+   "link_count": 0,
+   "link_to": "Item",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Customer",
+   "link_count": 0,
+   "link_to": "Customer",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Sales Invoice",
+   "link_count": 0,
+   "link_to": "Sales Invoice",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2026-03-23 13:20:22.338871",
+ "modified_by": "Administrator",
+ "module": "Kenya Compliance Via DigiTax",
+ "name": "eTims",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [],
+ "sequence_id": 23.0,
+ "shortcuts": [
+  {
+   "color": "Pink",
+   "doc_view": "List",
+   "label": "Etims Notices",
+   "link_to": "eTims Notices",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Orange",
+   "doc_view": "List",
+   "label": "Integration Request",
+   "link_to": "Integration Request",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Red",
+   "doc_view": "List",
+   "label": "Error Log",
+   "link_to": "Error Log",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Blue",
+   "doc_view": "List",
+   "label": "Etims Settings",
+   "link_to": "eTims Settings",
+   "stats_filter": "[[\"eTims Settings\",\"is_active\",\"=\",1]]",
+   "type": "DocType"
+  }
+ ],
+ "title": "eTims",
+ "type": "Workspace"
+}

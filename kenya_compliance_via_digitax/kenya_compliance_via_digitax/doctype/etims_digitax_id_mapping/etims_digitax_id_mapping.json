@@ -1,0 +1,123 @@
+{
+  "actions": [],
+  "allow_rename": 1,
+  "creation": "2026-03-04 08:20:46.660442",
+  "doctype": "DocType",
+  "editable_grid": 1,
+  "engine": "InnoDB",
+  "field_order": [
+    "etims_setup",
+    "company",
+    "column_break_qgtr",
+    "digitax_id",
+    "submission_tries",
+    "section_break_zwhx",
+    "sent_to_etims",
+    "imported_item_submitted",
+    "column_break_wjma",
+    "etims_code",
+    "disabled"
+  ],
+  "fields": [
+    {
+      "allow_on_submit": 1,
+      "fieldname": "etims_setup",
+      "fieldtype": "Link",
+      "in_filter": 1,
+      "in_list_view": 1,
+      "in_standard_filter": 1,
+      "label": "eTims Setup",
+      "options": "eTims Settings",
+      "read_only": 1,
+      "reqd": 1
+    },
+    {
+      "fieldname": "column_break_qgtr",
+      "fieldtype": "Column Break"
+    },
+    {
+      "allow_on_submit": 1,
+      "fieldname": "digitax_id",
+      "fieldtype": "Data",
+      "in_filter": 1,
+      "in_list_view": 1,
+      "in_standard_filter": 1,
+      "label": "Digitax ID",
+      "read_only": 1,
+      "reqd": 1
+    },
+    {
+      "allow_on_submit": 1,
+      "default": "0",
+      "fieldname": "disabled",
+      "fieldtype": "Check",
+      "in_filter": 1,
+      "in_list_view": 1,
+      "in_standard_filter": 1,
+      "label": "Disabled"
+    },
+    {
+      "fieldname": "section_break_zwhx",
+      "fieldtype": "Section Break"
+    },
+    {
+      "allow_on_submit": 1,
+      "default": "0",
+      "fieldname": "sent_to_etims",
+      "fieldtype": "Check",
+      "label": "Sent to eTims",
+      "read_only": 1
+    },
+    {
+      "fieldname": "column_break_wjma",
+      "fieldtype": "Column Break"
+    },
+    {
+      "default": "0",
+      "fieldname": "imported_item_submitted",
+      "fieldtype": "Check",
+      "label": "Imported Item Submitted?"
+    },
+    {
+      "allow_on_submit": 1,
+      "fetch_from": "etims_setup.company",
+      "fieldname": "company",
+      "fieldtype": "Link",
+      "in_filter": 1,
+      "in_list_view": 1,
+      "in_standard_filter": 1,
+      "label": "Company",
+      "options": "Company",
+      "read_only": 1,
+      "reqd": 1
+    },
+    {
+      "default": "0",
+      "fieldname": "submission_tries",
+      "fieldtype": "Int",
+      "label": "Submission Tries",
+      "non_negative": 1
+    },
+    {
+      "fieldname": "etims_code",
+      "fieldtype": "Data",
+      "label": "eTims Code",
+      "read_only": 1
+    }
+  ],
+  "grid_page_length": 50,
+  "index_web_pages_for_search": 1,
+  "istable": 1,
+  "links": [],
+  "modified": "2026-03-04 09:54:30.714015",
+  "modified_by": "Administrator",
+  "module": "Kenya Compliance Via DigiTax",
+  "name": "eTims Digitax ID Mapping",
+  "owner": "Administrator",
+  "permissions": [],
+  "row_format": "Dynamic",
+  "rows_threshold_for_grid_search": 20,
+  "sort_field": "creation",
+  "sort_order": "DESC",
+  "states": []
+}
