@@ -44,7 +44,20 @@ def bulk_submit_sales_invoices(docs_list: str = None, settings_name: str = None)
     filters = {"docstatus": 1, "successfully_submitted": 0}
 
     if docs_list:
-        provided_names = json.loads(docs_list)
+        # Accept both JSON-string input and Python list input for docs_list
+        if isinstance(docs_list, str):
+            try:
+                provided_names = json.loads(docs_list)
+            except (TypeError, json.JSONDecodeError):
+                frappe.throw(
+                    _("Invalid docs_list format. Expected a JSON array or list of invoice names.")
+                )
+        elif isinstance(docs_list, list):
+            provided_names = docs_list
+        else:
+            frappe.throw(
+                _("Invalid docs_list type. Expected a JSON string or list of invoice names.")
+            )
         valid_invoices = frappe.get_all("Sales Invoice", filters=filters, pluck="name")
         invoices_to_process = [n for n in provided_names if n in valid_invoices]
     else:
