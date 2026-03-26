@@ -880,6 +880,47 @@ def build_callback_url(endpoint: str) -> str:
     return f"{base_url}/api/method/{endpoint}"
 
 
+def build_return_invoice_payload(
+    invoice: Document, kra_invoice_data: Dict[str, Any], settings_name: str = None
+) -> Dict[str, Any]:
+    currency = invoice.currency
+    company_currency = frappe.get_value("Company", invoice.company, "default_currency")
+    convertion_rate = 1
+    rate_field, tax_field = "net_rate", "tax_amount"
+
+    if currency == "KES":
+        rate_field = "net_rate"
+        tax_field = "tax_amount"
+    elif company_currency == "KES":
+        rate_field = "base_net_rate"
+        tax_field = "base_tax_amount"
+    else:
+        convertion_rate, _ = get_kes_conversion_rate(
+            currency=currency,
+            company_currency=company_currency,
+            posting_date=invoice.posting_date,
+        )
+        rate_field = "base_net_rate"
+        tax_field = "base_tax_amount"
+
+    kra_total = sum(
+        item.get("total_amount", 0) for item in kra_invoice_data.get("item_list", [])
+    )
+    return_total = abs(float(invoice.base_grand_total) * convertion_rate)
+
+    is_full_return = abs(kra_total - return_total) < 0.01
+
+    return prepare_return_invoice_payload(
+        invoice=invoice,
+        kra_invoice_data=kra_invoice_data,
+        is_full_return=is_full_return,
+        rate_field=rate_field,
+        tax_field=tax_field,
+        convertion_rate=convertion_rate,
+        settings_name=settings_name,
+    )
+
+
 def get_invoice_reference_number(invoice: Document) -> str:
     """
     Generate a unique reference number for the invoice submission.
@@ -901,156 +942,58 @@ def get_invoice_reference_number(invoice: Document) -> str:
         and int(invoice.revision_count) > 0
     ):
         reference_number = f"{invoice.name}-REV{int(invoice.revision_count)}"
+
     return reference_number
 
 
-def build_return_invoice_payload(
-    invoice: Document, kra_invoice_data: Dict[str, Any]
-) -> Dict[str, Any]:
-    """
-    Build a return invoice payload for eTims.
-
-    - For full returns: Use original KRA invoice lines with actual prices/quantities from KRA.
-    - For partial returns: Use ERPNext return invoice data only.
-
-    Args:
-        invoice (Document): The ERPNext Sales Invoice document (return type).
-        kra_invoice_data (dict): The original KRA invoice response.
-
-    Returns:
-        dict: The payload to submit to eTims for a return invoice.
-    """
-    currency = invoice.currency
-    company_currency = frappe.get_value("Company", invoice.company, "default_currency")
-    convertion_rate = 1
-    rate_field, tax_field = "net_rate", "tax_amount"
-
-    if currency == "KES":
-        rate_field = "net_rate"
-        tax_field = "tax_amount"
-    elif company_currency == "KES":
-        rate_field = "base_net_rate"
-        tax_field = "base_tax_amount"
-    else:
-        convertion_rate, used_rate = get_kes_conversion_rate(
-            currency=currency,
-            company_currency=company_currency,
-            posting_date=invoice.posting_date,
-        )
-        if used_rate != "net":
-            rate_field = "base_net_rate"
-            tax_field = "base_tax_amount"
-
-    original_invoice = frappe.get_doc("Sales Invoice", invoice.return_against)
-    original_invoice_total = abs(
-        float(original_invoice.base_grand_total) * convertion_rate
-    )
-    return_total = abs(float(invoice.base_grand_total) * convertion_rate)
-    is_full_return = abs(original_invoice_total - return_total) < 0.01
-    reference_number = get_invoice_reference_number(original_invoice)
-    amount = (
-        float(kra_invoice_data.get("total_gross_amount", 0))
-        if is_full_return and "total_gross_amount" in kra_invoice_data
-        else return_total
-    )
-    return prepare_return_invoice_payload(
-        document_name=invoice.name,
-        reference_number=reference_number,
-        amount=amount,
-        invoice=invoice,
-        kra_invoice_data=kra_invoice_data,
-        is_full_return=is_full_return,
-        rate_field=rate_field,
-        tax_field=tax_field,
-        convertion_rate=convertion_rate,
-    )
-
-
 def prepare_return_invoice_payload(
-    document_name: str,
-    reference_number: str,
-    amount: float,
     invoice: Document,
     kra_invoice_data: Dict[str, Any],
     is_full_return: bool,
     rate_field: str,
     tax_field: str,
     convertion_rate: float,
+    settings_name: str = None,
 ) -> Dict[str, Any]:
     items = []
+
     if is_full_return:
-        for line in kra_invoice_data.get("sales_invoice_lines", []):
+        for line in kra_invoice_data.get("item_list", []):
             items.append(
                 {
-                    "item_name": line.get("product_name"),
-                    "quantity": round(abs(line.get("quantity", 0)), 2),
-                    "amount": round(abs(line.get("price_inclusive_tax", 0)), 4),
+                    "id": line.get("item_id"),
+                    "quantity": abs(line.get("quantity", 0)),
+                    "unit_price": line.get("unit_price"),
+                    "total_amount": abs(line.get("total_amount", 0)),
+                    "item_description": line.get("etims_item_code"),
                 }
             )
     else:
         for item in invoice.items:
-            tax_amount = item.get(tax_field, 0) or 0
             qty = abs(item.get("qty"))
-            base_amount = round(abs(item.get(rate_field)) or 0, 4)
+            unit_price = (
+                item.get(rate_field) + (item.get(tax_field) / item.get("qty", 1))
+            ) * convertion_rate
+
             items.append(
                 {
-                    "item_name": item.item_code,
-                    "quantity": 1,
-                    "amount": round(base_amount - tax_amount, 4)
-                    * qty
-                    * convertion_rate,
+                    "id": get_digitax_id("Item", item.item_code, setting=settings_name)
+                    or item.item_code,
+                    "quantity": qty,
+                    "unit_price": round(unit_price, 4),
+                    "total_amount": round(unit_price * qty, 4),
+                    "item_description": item.get("item_name"),
                 }
             )
 
     return {
-        "document_name": document_name,
-        "invoice_reference": reference_number,
-        "refund_reason": "13",
-        # "amount": amount,
+        "return_date": str(invoice.posting_date),
+        "sale_id": kra_invoice_data.get("id"),
+        "trader_invoice_number": invoice.name,
+        "invoice_details": f"Return for {kra_invoice_data.get('trader_invoice_number')}",
         "items": items,
+        "document_name": invoice.name,
     }
-
-
-def prepare_credit_note_payload(
-    document_name: str,
-    data: Dict[str, Any],
-) -> Dict:
-
-    credit_note_details = {
-        "amount": data.get("total_gross_amount", 0),
-        "customer": data.get("customer"),
-        "invoice": data.get("id"),
-        "reason": "13",
-        "source_organisation_unit": data.get("source_organisation_unit"),
-        "organisation": data.get("organisation"),
-        "description": f"Credit Note for {document_name}",
-    }
-
-    return credit_note_details
-
-
-def prepare_credit_note_items_payload(
-    credit_note: str,
-    data: Dict[str, Any],
-    settings_name: str,
-) -> Dict:
-    items = data.get("sales_invoice_lines", [])
-    credit_note_items = []
-    for item in items:
-        credit_note_items.append(
-            {
-                "product": get_digitax_id(
-                    "Item",
-                    item.get("product_name"),
-                    settings_name,
-                ),
-                "credit_note": credit_note,
-                "quantity": abs(item.get("quantity", 0)),
-                "new_price": round(abs(item.get("price_inclusive_tax", 0)), 4),
-                "organisation": data.get("organisation"),
-            }
-        )
-    return credit_note_items
 
 
 def validate_kra_pin(pin: str):
