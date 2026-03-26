@@ -199,10 +199,11 @@ class EndpointsBuilder(BaseEndpointsBuilder):
 
         self.doctype, self.document_name = doctype, document_name
         route_path = self._route_path
+        current_int_req = None
 
         if not retrying:
             try:
-                self.integration_request = create_request_log(
+                current_int_req = create_request_log(
                     data=self._payload,
                     request_description=self._request_description,
                     is_remote_request=True,
@@ -212,8 +213,8 @@ class EndpointsBuilder(BaseEndpointsBuilder):
                     reference_docname=document_name,
                     reference_doctype=doctype,
                 )
-            except frappe.LinkValidationError:
-                self.integration_request = create_request_log(
+            except Exception:
+                current_int_req = create_request_log(
                     data=self._payload,
                     request_description=self._request_description,
                     is_remote_request=True,
@@ -222,6 +223,8 @@ class EndpointsBuilder(BaseEndpointsBuilder):
                     url=self._url,
                     reference_doctype=doctype,
                 )
+
+        self.integration_request = current_int_req
 
         try:
             if self._method == "POST":
@@ -252,11 +255,11 @@ class EndpointsBuilder(BaseEndpointsBuilder):
             update_last_request_date(datetime.now(), self._route_path)
 
             if response.status_code in {200, 201}:
-                frappe.db.set_value(
-                    "Integration Request",
-                    self.integration_request.name,
-                    "status",
-                    "Completed",
+                update_integration_request(
+                    current_int_req.name,
+                    status="Completed",
+                    output=str(response_data),
+                    error=None,
                 )
 
                 self._success_callback_handler(
@@ -265,35 +268,15 @@ class EndpointsBuilder(BaseEndpointsBuilder):
                     doctype=doctype,
                     payload=self._payload,
                     settings_name=self._settings.name,
-                )
-
-                current_page = response_data.get("current_page", None)
-                total_pages = response_data.get("total_pages", 0)
-
-                update_integration_request(
-                    self.integration_request.name,
-                    status="Completed",
-                    output=str(response_data),
-                    error=None,
-                    request_description=(
-                        f"Page {current_page} of {total_pages}"
-                        if int(total_pages) > 1
-                        else None
-                    ),
+                    integration_request=current_int_req.name,
                 )
             else:
-                if isinstance(response_data, str):
-                    error = response_data
-                elif isinstance(response_data, list):
-                    error = response_data[0]
-                else:
-                    error = str(response_data)
-
+                error_msg = str(response_data)
                 update_integration_request(
-                    self.integration_request.name,
+                    current_int_req.name,
                     status="Failed",
-                    output=None,
-                    error=error,
+                    output=str(response_data),
+                    error=error_msg,
                 )
                 on_digitax_error(
                     response_data,
@@ -301,6 +284,7 @@ class EndpointsBuilder(BaseEndpointsBuilder):
                     doctype=doctype,
                     document_name=document_name,
                 )
+
                 if self._error_callback_handler:
                     self._error_callback_handler(
                         response=response_data,
@@ -314,11 +298,12 @@ class EndpointsBuilder(BaseEndpointsBuilder):
             return response_data
 
         except Exception as error:
+            if current_int_req:
+                update_integration_request(
+                    current_int_req.name, status="Failed", error=str(error)
+                )
             frappe.log_error(
-                title="eTims Error",
-                message=f"Error: {error} \nURL: {route_path} \nTraceback: {frappe.get_traceback()}",
-                reference_doctype=self.doctype,
-                reference_name=self.document_name,
+                title="eTims Execution Error", message=frappe.get_traceback()
             )
             return None
 
@@ -403,3 +388,4 @@ def update_integration_request(
     frappe.db.set_value(
         "Integration Request", integration_request, update_fields, update_modified=False
     )
+    frappe.db.commit()

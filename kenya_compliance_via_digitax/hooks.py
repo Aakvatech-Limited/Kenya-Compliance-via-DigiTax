@@ -48,6 +48,7 @@ doctype_js = {
     "Sales Invoice": "kenya_compliance_via_digitax/overrides/client/sales_invoice.js",
     "Customer": "kenya_compliance_via_digitax/overrides/client/customer.js",
     "Item": "kenya_compliance_via_digitax/overrides/client/items.js",
+    "Stock Ledger Entry": "kenya_compliance_via_digitax/overrides/client/stock_ledger_entry.js",
 }
 
 doctype_list_js = {
@@ -186,6 +187,11 @@ doc_events = {
         "after_insert": [
             "kenya_compliance_via_digitax.kenya_compliance_via_digitax.overrides.server.customer.after_insert"
         ],
+    },
+    "Stock Ledger Entry": {
+        "on_submit": [
+            "kenya_compliance_via_digitax.kenya_compliance_via_digitax.overrides.server.stock_ledger_entry.on_submit"
+        ]
     },
 }
 

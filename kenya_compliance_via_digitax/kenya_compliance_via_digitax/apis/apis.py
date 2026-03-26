@@ -1,6 +1,7 @@
 import asyncio
 import json
-from typing import List
+import time
+from typing import Any, Callable, List, Optional
 
 import aiohttp
 import frappe
@@ -24,6 +25,8 @@ from ..utils import (
 from .api_builder import EndpointsBuilder
 from .process_request import process_request
 from .remote_response_status_handlers import (
+    credit_note_submission_on_error,
+    credit_note_submission_on_success,
     customer_details_submission_on_success,
     customer_details_submission_on_error,
     customers_search_on_success,
@@ -50,13 +53,17 @@ def bulk_submit_sales_invoices(docs_list: str = None, settings_name: str = None)
                 provided_names = json.loads(docs_list)
             except (TypeError, json.JSONDecodeError):
                 frappe.throw(
-                    _("Invalid docs_list format. Expected a JSON array or list of invoice names.")
+                    _(
+                        "Invalid docs_list format. Expected a JSON array or list of invoice names."
+                    )
                 )
         elif isinstance(docs_list, list):
             provided_names = docs_list
         else:
             frappe.throw(
-                _("Invalid docs_list type. Expected a JSON string or list of invoice names.")
+                _(
+                    "Invalid docs_list type. Expected a JSON string or list of invoice names."
+                )
             )
         valid_invoices = frappe.get_all("Sales Invoice", filters=filters, pluck="name")
         invoices_to_process = [n for n in provided_names if n in valid_invoices]
@@ -561,50 +568,44 @@ def ping_server(request_data: str) -> None:
 
 @frappe.whitelist()
 def _process_invoice_fetch_request(
-    id: str = None,
-    document_name: str = None,
+    id: Optional[str] = None,
+    document_name: Optional[str] = None,
     invoice_type: str = "Sales Invoice",
-    settings_name: str = None,
-    company: str = None,
-    handler_function=None,
-    reference_number: str = None,
+    settings_name: Optional[str] = None,
+    company: Optional[str] = None,
+    handler_function: Optional[Callable] = None,
     is_return: bool = False,
-    original_invoice_id: str = None,
-) -> None:
+    original_invoice_id: Optional[str] = None,
+    delay: Optional[int] = 0,
+) -> Any:
     """Common helper function to process invoice-related requests."""
+    if int(delay) and int(delay) > 0:
+        time.sleep(int(delay))
     invoice = frappe.get_doc(invoice_type, document_name)
 
     if is_return and not original_invoice_id:
         frappe.throw("Original invoice ID is required for return processing.")
 
+    if not id:
+        id = frappe.get_value(
+            invoice_type,
+            {"name": document_name},
+            "digitax_id",
+        )
+
+    if not id:
+        frappe.msgprint(
+            f"Invoice {document_name} is not registered. Cannot fetch details from eTims."
+        )
+        return
+
     request_data = {
         "document_name": document_name,
         "company": company or invoice.company,
+        "id": id,
     }
 
-    route_key = "TrnsSalesSearchReq"
-
-    if invoice.is_return or is_return:
-        route_key = "SalesCreditNoteSaveReq"
-
-    if id:
-        request_data["id"] = id
-    else:
-        if (invoice.is_return and invoice.return_against) or (
-            is_return and original_invoice_id
-        ):
-            route_key = "SalesCreditNoteSaveReq"
-            original_invoice_digitax_id = (
-                original_invoice_id
-                if is_return
-                else frappe.db.get_value(
-                    "Sales Invoice", invoice.return_against, "digitax_id"
-                )
-            )
-            request_data["invoice"] = original_invoice_digitax_id
-        else:
-            route_key = "CreditNoteSaveReq"
-            request_data["reference_number"] = reference_number
+    route_key = "SalesFetchReq"
 
     return process_request(
         request_data,
@@ -623,18 +624,17 @@ def get_invoice_details(
     invoice_type: str = "Sales Invoice",
     settings_name: str = None,
     company: str = None,
+    delay: int = 0,
 ) -> None:
     """Get invoice details"""
-    invoice = frappe.get_doc(invoice_type, document_name)
-    reference_number = get_invoice_reference_number(invoice)
     _process_invoice_fetch_request(
-        id=None,
+        id=id,
         document_name=document_name,
         invoice_type=invoice_type,
         settings_name=settings_name,
         company=company,
         handler_function=update_invoice_info,
-        reference_number=reference_number,
+        delay=delay,
     )
 
 
@@ -648,7 +648,6 @@ def verify_invoice_details(
 ) -> None:
     """Verify invoice details"""
     invoice = frappe.get_doc(invoice_type, document_name)
-    reference_number = get_invoice_reference_number(invoice)
     _process_invoice_fetch_request(
         id=id,
         document_name=document_name,
@@ -656,7 +655,6 @@ def verify_invoice_details(
         settings_name=settings_name,
         company=company,
         handler_function=verify_and_fix_invoice_info,
-        reference_number=reference_number,
     )
 
 
@@ -664,20 +662,22 @@ def verify_invoice_details(
 def submit_credit_note(
     response: dict, document_name: str, doctype: str, settings_name: str, **kwargs
 ) -> None:
-    """Submit credit note"""
     doc = frappe.get_doc(doctype, document_name)
-    data = response.get("results", [])[0] if response.get("results") else response
-    scu_data = data.get("scu_data")
-    if not scu_data:
+
+    data = response.get("results")[0] if response.get("results") else response
+
+    if not data.get("id"):
         return
-    payload = build_return_invoice_payload(doc, data)
+
+    payload = build_return_invoice_payload(doc, data, settings_name)
     frappe.enqueue(
         process_request,
         queue="default",
         is_async=True,
         request_data=payload,
         route_key="CreditNoteSaveReq",
-        handler_function=sales_information_submission_on_success,
+        handler_function=credit_note_submission_on_success,
+        error_callback=credit_note_submission_on_error,
         request_method="POST",
         doctype=doctype,
         settings_name=settings_name,

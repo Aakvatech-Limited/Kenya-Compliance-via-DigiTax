@@ -37,6 +37,7 @@ def generic_invoices_on_submit_override(
         validate_kra_pin(doc.tax_id)
 
     settings_doc = get_settings(company_name=company_name)
+
     if (
         doc.prevent_etims_submission
         or (hasattr(doc, "etr_invoice_number") and doc.etr_invoice_number)
@@ -75,17 +76,22 @@ def generic_invoices_on_submit_override(
         from ...apis.apis import submit_credit_note
 
         reference_number = get_invoice_reference_number(return_invoice)
+        id = frappe.get_value(
+            "Sales Invoice" if invoice_type == "Sales Invoice" else "POS Invoice",
+            {"name": doc.return_against},
+            "digitax_id",
+        )
         request_data = {
             "document_name": doc.name,
             "company": company_name,
-            "reference_number": reference_number,
+            "id": id,
         }
         frappe.enqueue(
             process_request,
             queue="default",
             is_async=True,
             request_data=request_data,
-            route_key="CreditNoteSaveReq",
+            route_key="SalesFetchReq",
             handler_function=submit_credit_note,
             doctype=invoice_type,
             settings_name=settings_doc.name,
