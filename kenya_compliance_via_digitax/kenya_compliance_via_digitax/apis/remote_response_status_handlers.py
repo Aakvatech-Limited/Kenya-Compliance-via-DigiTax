@@ -436,13 +436,12 @@ def notices_search_on_success(response: dict | list, **kwargs) -> None:
 
 
 def create_notice_if_new(notice: dict) -> None:
-    exists = frappe.db.exists(
-        NOTICES_DOCTYPE_NAME, {"notice_number": notice.get("notice_number")}
-    )
-    if exists:
+    notice_number = notice.get("notice_number")
+
+    if not notice_number:
         return
 
-    raw_date = notice.get("registration_date")
+    raw_date = notice.get("notice_date")
     formatted_date = None
 
     if isinstance(raw_date, str):
@@ -453,32 +452,51 @@ def create_notice_if_new(notice: dict) -> None:
         except (ValueError, TypeError):
             pass
 
-    doc = frappe.new_doc(NOTICES_DOCTYPE_NAME)
-    doc.flags.ignore_permissions = True
-    doc.flags.ignore_validate_update_after_submit = True
-    doc.update(
-        {
-            "notice_number": notice.get("notice_number"),
-            "title": notice.get("title"),
-            "registration_name": notice.get("registration_name"),
-            "details_url": notice.get("detail_url"),
-            "registration_datetime": formatted_date,
-            "contents": notice.get("content"),
-        }
+    existing_name = frappe.db.exists(
+        NOTICES_DOCTYPE_NAME, {"notice_number": notice_number}
     )
 
     try:
-        doc.insert()
-        doc.submit()
-    except frappe.exceptions.DuplicateEntryError:
+        if existing_name:
+            doc = frappe.get_doc(NOTICES_DOCTYPE_NAME, existing_name)
+            doc.flags.ignore_permissions = True
+
+            doc.update(
+                {
+                    "title": notice.get("title"),
+                    "details_url": notice.get("link"),
+                    "registration_datetime": formatted_date,
+                    "contents": notice.get("detail"),
+                }
+            )
+
+            doc.save()
+
+        else:
+            doc = frappe.new_doc(NOTICES_DOCTYPE_NAME)
+            doc.flags.ignore_permissions = True
+
+            doc.update(
+                {
+                    "notice_number": notice_number,
+                    "title": notice.get("title"),
+                    "details_url": notice.get("link"),
+                    "registration_datetime": formatted_date,
+                    "contents": notice.get("detail"),
+                }
+            )
+
+            doc.insert()
+
+    except Exception as e:
         frappe.log_error(
-            title="Duplicate Entry Error",
-            message=f"Duplicate notice detected: {notice.get('notice_number')}",
+            title="Notice Upsert Failed",
+            message=f"Error processing notice {notice_number}: {str(e)}",
         )
     except Exception:
         frappe.log_error(
-            title="Notice Creation Failed",
-            message=f"Error creating notice {notice.get('notice_number')}: {frappe.get_traceback()}",
+            title="Notice Upsert Failed",
+            message=f"Error processing notice {notice_number}: {frappe.get_traceback()}",
         )
 
 
