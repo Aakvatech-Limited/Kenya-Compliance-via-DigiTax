@@ -169,7 +169,7 @@ function showCompanySelectionModal(frm, actionType, availableSettings) {
 function executeItemAction(frm, actionType, settingName) {
 	let method = "";
 	let args = {};
-	let digitaxId = "";
+	let digitaxId = ""; 
 
 	if (frm.doc.etims_setup_mapping) {
 		const row = frm.doc.etims_setup_mapping.find((r) => r.etims_setup === settingName);
