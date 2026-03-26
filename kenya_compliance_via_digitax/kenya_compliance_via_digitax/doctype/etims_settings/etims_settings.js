@@ -3,6 +3,9 @@
 
 frappe.ui.form.on("eTims Settings", {
 	refresh(frm) {
+		if (!frm.is_new()) {
+			override_delete(frm);
+		}
 		if (!frm.is_new() && frm.doc.is_active) {
 			frm.add_custom_button(
 				__("Get Notices"),
@@ -38,3 +41,52 @@ frappe.ui.form.on("eTims Settings", {
 		}
 	},
 });
+
+function override_delete(frm) {
+	setTimeout(() => {
+		frm.page.menu.find('.dropdown-item:contains("Delete")').parent().remove();
+
+		frm.page.add_menu_item(__("Delete"), () => {
+			custom_delete_etims(frm);
+		});
+	}, 100);
+}
+
+function custom_delete_etims(frm) {
+	frappe.confirm(
+		__(
+			"This will delete this setup AND all related records (mappings, logs, integration requests). Continue?",
+		),
+		() => {
+			frm.call({
+				method: "delete_mappings",
+				doc: frm.doc,
+				freeze: true,
+				freeze_message: __("Cleaning related records..."),
+				callback: () => {
+					frappe.call({
+						method: "frappe.client.delete",
+						args: {
+							doctype: frm.doctype,
+							name: frm.doc.name,
+						},
+						callback: () => {
+							frappe.show_alert({
+								message: __("Deleted successfully"),
+								indicator: "green",
+							});
+							frappe.set_route("List", frm.doctype);
+						},
+					});
+				},
+				error: () => {
+					frappe.msgprint({
+						title: __("Error"),
+						indicator: "red",
+						message: __("Cleanup failed. Delete aborted."),
+					});
+				},
+			});
+		},
+	);
+}
