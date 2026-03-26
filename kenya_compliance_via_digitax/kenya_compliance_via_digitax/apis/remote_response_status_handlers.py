@@ -212,6 +212,68 @@ def sales_information_submission_on_success(
     frappe.db.set_value(doctype, document_name, updates)
 
 
+def credit_note_submission_on_success(
+    response: dict, document_name: str, doctype: str, settings_name: str, **kwargs
+) -> None:
+    data = response.get("results", [{}])[0] if "results" in response else response
+
+    updates = {
+        "successfully_submitted": 1,
+        "digitax_id": data.get("id") or data.get("existing_sale_id"),
+    }
+
+    if data.get("etims_url"):
+        updates.update(
+            {
+                "receipt_signature": data.get("receipt_signature"),
+                "etims_serial_number": data.get("serial_number"),
+                "current_receipt_number": data.get("receipt_number"),
+                "qr_code_url": data.get("etims_url"),
+            }
+        )
+
+    frappe.enqueue(
+        "kenya_compliance_via_digitax.kenya_compliance_via_digitax.apis.apis.get_invoice_details",
+        queue="default",
+        timeout=300,
+        is_async=True,
+        job_name=f"get_invoice_details_{document_name}",
+        at_front=False,
+        delay=10,
+        document_name=document_name,
+        invoice_type="Sales Invoice",
+        settings_name=settings_name,
+    )
+
+    frappe.db.set_value(doctype, document_name, updates)
+    frappe.publish_realtime("refresh_form", document_name)
+
+
+def credit_note_submission_on_error(
+    response: dict, document_name: str, doctype: str, settings_name: str, **kwargs
+) -> None:
+    updates = {
+        "successfully_submitted": 1,
+    }
+    data = get_response_data(response)
+    if data.get("id") or data.get("existing_sale_id"):
+        name = data.get("trader_invoice_number")
+        updates["digitax_id"] = data.get("id") or data.get("existing_sale_id")
+        frappe.db.set_value(doctype, name, updates)
+        frappe.enqueue(
+            "kenya_compliance_via_digitax.kenya_compliance_via_digitax.apis.apis.get_invoice_details",
+            queue="default",
+            timeout=300,
+            is_async=True,
+            job_name=f"get_invoice_details_{document_name}",
+            at_front=False,
+            delay=0,
+            document_name=document_name,
+            invoice_type="Sales Invoice",
+            settings_name=settings_name,
+        )
+
+
 def sales_information_submission_on_error(
     response: dict, document_name: str, doctype: str, settings_name: str, **kwargs
 ) -> None:
