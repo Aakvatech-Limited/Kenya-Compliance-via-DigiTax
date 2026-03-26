@@ -2,12 +2,12 @@
  {
   "docstatus": 0,
   "doctype": "eTims Routes",
-  "modified": "2026-03-23 14:00:11.864981",
+  "modified": "2026-03-26 10:41:59.768109",
   "name": "Digitax",
   "routes_table": [
    {
     "description": null,
-    "last_request_date": "2026-02-20 11:00:08.106879",
+    "last_request_date": "2026-03-26 06:46:55.647053",
     "url_path": "/v2/notices",
     "url_path_function": "NoticeSearchReq"
    },
@@ -19,13 +19,19 @@
    },
    {
     "description": null,
-    "last_request_date": "2026-03-23 13:46:54.289898",
+    "last_request_date": "2026-03-26 06:58:16.359767",
     "url_path": "/v2/items",
     "url_path_function": "RegisterItemReq"
    },
    {
     "description": null,
-    "last_request_date": "2026-03-04 11:19:27.441664",
+    "last_request_date": "2026-03-26 10:57:29.391538",
+    "url_path": "/v2/items/{id}",
+    "url_path_function": "ItemSearchReq"
+   },
+   {
+    "description": null,
+    "last_request_date": "2026-03-26 08:30:47.335215",
     "url_path": "/v2/sales",
     "url_path_function": "SalesSaveReq"
    },
@@ -37,13 +43,13 @@
    },
    {
     "description": null,
-    "last_request_date": "2026-03-04 10:57:18.345147",
+    "last_request_date": "2026-03-26 08:38:39.883548",
     "url_path": "/v2/sales/{id}",
     "url_path_function": "SalesFetchReq"
    },
    {
     "description": null,
-    "last_request_date": null,
+    "last_request_date": "2026-03-26 08:38:29.054055",
     "url_path": "/v2/credit-notes",
     "url_path_function": "CreditNoteSaveReq"
    },
@@ -52,6 +58,12 @@
     "last_request_date": null,
     "url_path": "/v2/credit-notes/{id}",
     "url_path_function": "CreditNoteFetchReq"
+   },
+   {
+    "description": null,
+    "last_request_date": "2026-03-26 10:57:29.716178",
+    "url_path": "/v2/stock/adjust",
+    "url_path_function": "StockAdjustReq"
    }
   ],
   "vendor": "Digitax"
