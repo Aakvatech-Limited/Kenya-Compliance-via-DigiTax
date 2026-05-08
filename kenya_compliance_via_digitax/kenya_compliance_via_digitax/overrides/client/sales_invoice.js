@@ -1,7 +1,7 @@
 const parentDoctype = "Sales Invoice";
 const childDoctype = `${parentDoctype} Item`;
-const packagingUnitDoctypeName = "Navari eTims Packaging Unit";
-const unitOfQuantityDoctypeName = "Navari eTims Unit of Quantity";
+const packagingUnitDoctypeName = "eTims Packaging Unit";
+const unitOfQuantityDoctypeName = "eTims Unit of Quantity";
 const taxationTypeDoctypeName = "eTims Taxation Type";
 const settingsDoctypeName = "eTims Settings";
 
