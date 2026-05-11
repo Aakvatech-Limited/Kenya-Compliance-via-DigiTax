@@ -1,21 +1,19 @@
-exclude: 'node_modules|.git'
-default_stages: [pre-commit]
+exclude: "node_modules|.git"
+default_stages: [commit, manual]
 fail_fast: false
-
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v6.0.0
+    rev: v4.6.0
     hooks:
       - id: trailing-whitespace
         files: "kenya_compliance_via_digitax.*"
         exclude: ".*json$|.*txt$|.*csv|.*md|.*svg"
+      - id: check-yaml
+      - id: no-commit-to-branch
+        args: ["--branch", "develop", "--branch", "master", "--branch", "production"]
       - id: check-merge-conflict
       - id: check-ast
-      - id: check-json
-      - id: check-toml
-      - id: check-yaml
-      - id: debug-statements
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.14.10
@@ -35,35 +33,52 @@ repos:
     hooks:
       - id: prettier
         types_or: [javascript, vue, scss]
+        files: "^kenya_compliance_via_digitax/.*\\.(js|vue|scss)$"
         # Ignore any files that might contain jinja / bundles
         exclude: |
-            (?x)^(
-                kenya_compliance_via_digitax/public/dist/.*|
-                .*node_modules.*|
-                .*boilerplate.*|
-                kenya_compliance_via_digitax/templates/includes/.*|
-                kenya_compliance_via_digitax/public/js/lib/.*
-            )$
-
+          (?x)^(
+              kenya_compliance_via_digitax/public/dist/.*|
+              .*node_modules.*|
+              .*boilerplate.*|
+              kenya_compliance_via_digitax/templates/includes/.*|
+              kenya_compliance_via_digitax/public/js/lib/.*
+          )$
 
   - repo: https://github.com/pre-commit/mirrors-eslint
     rev: v8.44.0
     hooks:
       - id: eslint
         types_or: [javascript]
-        args: ['--quiet']
+        files: "^kenya_compliance_via_digitax/.*\\.js$"
+        args: ["--quiet", "--fix", "--config", ".eslintrc.js"]
+        additional_dependencies:
+          - eslint@8.44.0
+          - "@babel/eslint-parser@7.22.9"
+          - "@babel/core@7.22.9"
+          - "@babel/preset-env@7.22.9"
+          - "@babel/plugin-proposal-class-properties@7.18.6"
         # Ignore any files that might contain jinja / bundles
         exclude: |
-            (?x)^(
-                kenya_compliance_via_digitax/public/dist/.*|
-                cypress/.*|
-                .*node_modules.*|
-                .*boilerplate.*|
-                kenya_compliance_via_digitax/templates/includes/.*|
-                kenya_compliance_via_digitax/public/js/lib/.*
-            )$
+          (?x)^(
+              kenya_compliance_via_digitax/public/dist/.*|
+              cypress/.*|
+              .*node_modules.*|
+              .*boilerplate.*|
+              kenya_compliance_via_digitax/templates/includes/.*|
+              kenya_compliance_via_digitax/public/js/lib/.*
+          )$
+
+  - repo: local
+    hooks:
+      - id: semgrep
+        name: "Run Semgrep (frappe rules)"
+        entry: /home/elius-dev/projects/v15/env/bin/semgrep --config ~/frappe-semgrep-rules/rules --severity ERROR --error
+        language: system
+        types: [python]
+        files: "^kenya_compliance_via_digitax/"
+        pass_filenames: false
 
 ci:
-    autoupdate_schedule: weekly
-    skip: []
-    submodules: false
+  autoupdate_schedule: weekly
+  skip: [semgrep]
+  submodules: false
