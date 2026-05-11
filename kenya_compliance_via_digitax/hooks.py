@@ -298,7 +298,8 @@ doc_events = {
 export_python_type_annotations = True
 
 # Require all whitelisted methods to have type annotations
-require_type_annotated_api_methods = True
+# Not required for frappe 15 because it is frappe v16 based
+# require_type_annotated_api_methods = True
 
 # default_log_clearing_doctypes = {
 # 	"Logging DocType Name": 30  # days to retain logs
