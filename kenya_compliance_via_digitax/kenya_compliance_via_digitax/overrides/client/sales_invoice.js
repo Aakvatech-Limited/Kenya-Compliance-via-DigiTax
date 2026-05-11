@@ -5,14 +5,15 @@ const unitOfQuantityDoctypeName = "eTims Unit of Quantity";
 const taxationTypeDoctypeName = "eTims Taxation Type";
 const settingsDoctypeName = "eTims Settings";
 
-frappe.realtime.on("refresh_form", function (name) {
-	const currentForm = cur_frm;
-	if (currentForm && currentForm.doc.name === name) {
-		currentForm.reload_doc();
-	}
-});
-
 frappe.ui.form.on(parentDoctype, {
+	onload: function(frm) {
+		frappe.realtime.off("refresh_form");
+		frappe.realtime.on("refresh_form", function (name) {
+			if (frm && frm.doc.name === name) {
+				frm.reload_doc();
+			}
+		});
+	},
 	refresh: async function (frm) {
 		await updateTaxAmountLabel(frm);
 		if (frm.is_new()) return;

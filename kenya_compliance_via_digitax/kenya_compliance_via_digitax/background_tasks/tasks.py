@@ -14,7 +14,7 @@ endpoints_builder = EndpointsBuilder()
 
 
 @frappe.whitelist()
-def run_background_task(method_path, settings_name=None, request_data=None):
+def run_background_task(method_path: str, settings_name: str | None = None, request_data: dict | str | None = None) -> None:
     frappe.flags.ignore_permissions = True
     func = frappe.get_attr(method_path)
     return func(settings_name=settings_name, request_data=request_data)

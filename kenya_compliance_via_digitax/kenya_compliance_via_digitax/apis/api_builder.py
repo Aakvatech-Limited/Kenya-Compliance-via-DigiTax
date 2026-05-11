@@ -7,6 +7,7 @@ from urllib import parse
 import requests
 
 import frappe
+from frappe import _
 from frappe.integrations.utils import create_request_log
 from frappe.model.document import Document
 
@@ -65,10 +66,10 @@ class ErrorObserver:
                 reference_name=notifier.document_name,
             )
             frappe.throw(
-                """A Fatal Error was Encountered.
-                Please check the Error Log for more details""",
+                _("""A Fatal Error was Encountered.
+                Please check the Error Log for more details"""),
                 notifier.error,
-                title="Fatal Error",
+                title=_("Fatal Error"),
             )
 
 
@@ -182,9 +183,9 @@ class EndpointsBuilder(BaseEndpointsBuilder):
             or self._success_callback_handler is None
         ):
             frappe.throw(
-                """Please ensure all required parameters (URL, headers, method, success, and error callbacks) are set.""",
+                _("Please ensure all required parameters (URL, headers, method, success, and error callbacks) are set."),
                 frappe.MandatoryError,
-                title="Setup Error",
+                title=_("Setup Error"),
                 is_minimizable=True,
             )
 
@@ -388,4 +389,4 @@ def update_integration_request(
     frappe.db.set_value(
         "Integration Request", integration_request, update_fields, update_modified=False
     )
-    frappe.db.commit()
+    frappe.db.commit()  # nosemgrep: frappe-manual-db-commit - explicitly committing integration request status before error throws

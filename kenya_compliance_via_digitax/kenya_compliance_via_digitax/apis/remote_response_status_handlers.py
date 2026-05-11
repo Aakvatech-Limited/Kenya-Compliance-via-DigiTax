@@ -246,7 +246,7 @@ def credit_note_submission_on_success(
     )
 
     frappe.db.set_value(doctype, document_name, updates)
-    frappe.publish_realtime("refresh_form", document_name)
+    frappe.publish_realtime("refresh_form", message=document_name, doctype=doctype, docname=document_name)
 
 
 def credit_note_submission_on_error(
@@ -339,7 +339,7 @@ def process_invoice_response(
     )
 
     frappe.db.commit()
-    frappe.publish_realtime("refresh_form", invoice_name)
+    frappe.publish_realtime("refresh_form", message=invoice_name, doctype=doctype, docname=invoice_name)
 
 
 def verify_and_fix_invoice_info(
