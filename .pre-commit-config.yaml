@@ -1,11 +1,11 @@
 exclude: 'node_modules|.git'
-default_stages: [pre-commit]
+default_stages: [commit, manual]
 fail_fast: false
 
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v6.0.0
+    rev: v4.6.0
     hooks:
       - id: trailing-whitespace
         files: "kenya_compliance_via_digitax.*"
@@ -63,7 +63,15 @@ repos:
                 kenya_compliance_via_digitax/public/js/lib/.*
             )$
 
+  - repo: https://github.com/semgrep/semgrep
+    rev: v1.66.0
+    hooks:
+      - id: semgrep
+        name: Frappe Semgrep Security Scan
+        args: ['--config', '/home/elius-dev/frappe-semgrep-rules/rules', '--error', '--skip-unknown-extensions']
+        types_or: [python, javascript]
+
 ci:
     autoupdate_schedule: weekly
-    skip: []
+    skip: [semgrep]
     submodules: false
