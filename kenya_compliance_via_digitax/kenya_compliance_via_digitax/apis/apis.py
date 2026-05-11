@@ -315,7 +315,7 @@ def perform_item_registration(item_name: str, settings_name: str) -> dict | None
     )
 
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist(allow_guest=True)  # nosemgrep: Guest access required for external callbacks
 def item_registration_callback(**kwargs) -> None:
     try:
         data = kwargs.get("data", {})
@@ -353,7 +353,7 @@ def item_registration_callback(**kwargs) -> None:
         )
 
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist(allow_guest=True)  # nosemgrep: Guest access required for external callbacks
 def invoice_submission_callback(**kwargs) -> None:
     try:
         data = kwargs.get("data")
@@ -584,7 +584,7 @@ def _process_invoice_fetch_request(
     invoice = frappe.get_doc(invoice_type, document_name)
 
     if is_return and not original_invoice_id:
-        frappe.throw("Original invoice ID is required for return processing.")
+        frappe.throw(_("Original invoice ID is required for return processing."))
 
     if not id:
         id = frappe.get_value(

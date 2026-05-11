@@ -1,4 +1,5 @@
 import frappe
+from frappe import _
 from frappe.model.document import Document
 
 from .shared_overrides import generic_invoices_on_submit_override
@@ -33,12 +34,11 @@ def before_cancel(doc: Document, method: str = None) -> None:
 
     if doc.doctype == "Sales Invoice" and doc.successfully_submitted:
         frappe.throw(
-            "This invoice has already been <b>submitted</b> to eTIMS and cannot be <span style='color:red'>Canceled.</span>\n"
-            "If you need to make adjustments, please create a Credit Note instead."
+            _("This invoice has already been <b>submitted</b> to eTIMS and cannot be <span style='color:red'>Canceled.</span>\nIf you need to make adjustments, please create a Credit Note instead.")
         )
     elif doc.doctype == "Purchase Invoice" and doc.custom_submitted_successfully:
         frappe.throw(
-            "This invoice has already been <b>submitted</b> to eTIMS and cannot be <span style='color:red'>Canceled.</span>.\nIf you need to make adjustments, please create a Debit Note instead."
+            _("This invoice has already been <b>submitted</b> to eTIMS and cannot be <span style='color:red'>Canceled.</span>.\nIf you need to make adjustments, please create a Debit Note instead.")
         )
 
 

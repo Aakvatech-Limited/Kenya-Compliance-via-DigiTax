@@ -43,10 +43,8 @@ def validate(doc: Document, method: str = None) -> None:
             for c in existing
         )
         frappe.throw(
-            f"""
-            Tax ID <strong>{tax_id}</strong> is already used by Customer(s) {links}.
-            """,
-            title="Duplicate Tax ID",
+            _("Tax ID <strong>{0}</strong> is already used by Customer(s) {1}.").format(tax_id, links),
+            title=_("Duplicate Tax ID"),
         )
 
 
