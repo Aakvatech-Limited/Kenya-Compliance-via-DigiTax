@@ -78,7 +78,7 @@ function showSettingsModalAndExecute(title, settings, getCallArgs) {
 		title: __(title),
 		fields: [
 			{
-				label: __("Select eTims Settings"),
+				label: __("Select DigiTax eTims Settings"),
 				fieldname: "settings_name",
 				fieldtype: "Select",
 				options: settings.map((s) => ({

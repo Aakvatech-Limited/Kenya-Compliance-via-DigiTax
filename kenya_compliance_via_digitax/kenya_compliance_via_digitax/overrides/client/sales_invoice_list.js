@@ -1,5 +1,5 @@
 const doctypeName = "Sales Invoice";
-const settingsDoctypeName = "eTims Settings";
+const settingsDoctypeName = "DigiTax eTims Settings";
 
 frappe.listview_settings[doctypeName].onload = async function (listview) {
 	const { message: activeSetting } = await frappe.call({
@@ -99,7 +99,7 @@ function showSettingsModalAndExecute(title, settings, getCallArgs) {
 				title: __(title),
 				fields: [
 					{
-						label: __("Select eTims Settings"),
+						label: __("Select DigiTax eTims Settings"),
 						fieldname: "settings_name",
 						fieldtype: "Select",
 						options: options,
