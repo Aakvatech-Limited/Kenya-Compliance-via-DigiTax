@@ -190,7 +190,7 @@ class EndpointsBuilder(BaseEndpointsBuilder):
 
         if not self._settings.is_active == 1:
             frappe.log_error(
-                title="Inactive eTims Settings",
+                title="Inactive DigiTax eTims Settings",
                 message=f"eTims settings {self._settings.name} is inactive. Cannot make remote call.",
                 reference_doctype=doctype,
                 reference_name=document_name,

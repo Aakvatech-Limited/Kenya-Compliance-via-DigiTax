@@ -9,7 +9,7 @@ app_license = "agpl-3.0"
 # Apps
 # ------------------
 
-# required_apps = []
+required_apps = ["erpnext", "csf_ke"]
 
 # Each item in the list will be shown as an app in the apps page
 # add_to_apps_screen = [
@@ -45,16 +45,16 @@ app_license = "agpl-3.0"
 
 # include js in doctype views
 doctype_js = {
-    "Sales Invoice": "kenya_compliance_via_digitax/overrides/client/sales_invoice.js",
-    "Customer": "kenya_compliance_via_digitax/overrides/client/customer.js",
-    "Item": "kenya_compliance_via_digitax/overrides/client/items.js",
-    "Stock Ledger Entry": "kenya_compliance_via_digitax/overrides/client/stock_ledger_entry.js",
+	"Sales Invoice": "kenya_compliance_via_digitax/overrides/client/sales_invoice.js",
+	"Customer": "kenya_compliance_via_digitax/overrides/client/customer.js",
+	"Item": "kenya_compliance_via_digitax/overrides/client/items.js",
+	"Stock Ledger Entry": "kenya_compliance_via_digitax/overrides/client/stock_ledger_entry.js",
 }
 
 doctype_list_js = {
-    "Item": "kenya_compliance_via_digitax/overrides/client/items_list.js",
-    "Sales Invoice": "kenya_compliance_via_digitax/overrides/client/sales_invoice_list.js",
-    "Customer": "kenya_compliance_via_digitax/overrides/client/customer_list.js",
+	"Item": "kenya_compliance_via_digitax/overrides/client/items_list.js",
+	"Sales Invoice": "kenya_compliance_via_digitax/overrides/client/sales_invoice_list.js",
+	"Customer": "kenya_compliance_via_digitax/overrides/client/customer_list.js",
 }
 
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
@@ -146,53 +146,51 @@ doctype_list_js = {
 
 
 doc_events = {
-    # 	"*": {
-    # 		"on_update": "method",
-    # 		"on_cancel": "method",
-    # 		"on_trash": "method"
-    # 	}
-    "Sales Invoice": {
-        "on_update": [
-            "kenya_compliance_via_digitax.kenya_compliance_via_digitax.utils.after_save_"
-        ],
-        "on_submit": [
-            "kenya_compliance_via_digitax.kenya_compliance_via_digitax.overrides.server.sales_invoice.on_submit"
-        ],
-        "validate": [
-            "kenya_compliance_via_digitax.kenya_compliance_via_digitax.overrides.server.shared_overrides.validate"
-        ],
-        "before_cancel": [
-            "kenya_compliance_via_digitax.kenya_compliance_via_digitax.overrides.server.sales_invoice.before_cancel"
-        ],
-        "on_update_after_submit": [
-            "kenya_compliance_via_digitax.kenya_compliance_via_digitax.utils.after_save_"
-        ],
-    },
-    "Item": {
-        "validate": [
-            "kenya_compliance_via_digitax.kenya_compliance_via_digitax.overrides.server.item.validate"
-        ],
-        "on_update": [
-            "kenya_compliance_via_digitax.kenya_compliance_via_digitax.overrides.server.item.on_update"
-        ],
-        "on_trash": "kenya_compliance_via_digitax.kenya_compliance_via_digitax.overrides.server.item.prevent_item_deletion",
-    },
-    "Customer": {
-        "after_save": [
-            "kenya_compliance_via_digitax.kenya_compliance_via_digitax.overrides.server.customer.after_save"
-        ],
-        "validate": [
-            "kenya_compliance_via_digitax.kenya_compliance_via_digitax.overrides.server.customer.validate"
-        ],
-        "after_insert": [
-            "kenya_compliance_via_digitax.kenya_compliance_via_digitax.overrides.server.customer.after_insert"
-        ],
-    },
-    "Stock Ledger Entry": {
-        "on_submit": [
-            "kenya_compliance_via_digitax.kenya_compliance_via_digitax.overrides.server.stock_ledger_entry.on_submit"
-        ]
-    },
+	# 	"*": {
+	# 		"on_update": "method",
+	# 		"on_cancel": "method",
+	# 		"on_trash": "method"
+	# 	}
+	"Sales Invoice": {
+		"on_update": ["kenya_compliance_via_digitax.kenya_compliance_via_digitax.utils.after_save_"],
+		"on_submit": [
+			"kenya_compliance_via_digitax.kenya_compliance_via_digitax.overrides.server.sales_invoice.on_submit"
+		],
+		"validate": [
+			"kenya_compliance_via_digitax.kenya_compliance_via_digitax.overrides.server.shared_overrides.validate"
+		],
+		"before_cancel": [
+			"kenya_compliance_via_digitax.kenya_compliance_via_digitax.overrides.server.sales_invoice.before_cancel"
+		],
+		"on_update_after_submit": [
+			"kenya_compliance_via_digitax.kenya_compliance_via_digitax.utils.after_save_"
+		],
+	},
+	"Item": {
+		"validate": [
+			"kenya_compliance_via_digitax.kenya_compliance_via_digitax.overrides.server.item.validate"
+		],
+		"on_update": [
+			"kenya_compliance_via_digitax.kenya_compliance_via_digitax.overrides.server.item.on_update"
+		],
+		"on_trash": "kenya_compliance_via_digitax.kenya_compliance_via_digitax.overrides.server.item.prevent_item_deletion",
+	},
+	"Customer": {
+		"after_save": [
+			"kenya_compliance_via_digitax.kenya_compliance_via_digitax.overrides.server.customer.after_save"
+		],
+		"validate": [
+			"kenya_compliance_via_digitax.kenya_compliance_via_digitax.overrides.server.customer.validate"
+		],
+		"after_insert": [
+			"kenya_compliance_via_digitax.kenya_compliance_via_digitax.overrides.server.customer.after_insert"
+		],
+	},
+	"Stock Ledger Entry": {
+		"on_submit": [
+			"kenya_compliance_via_digitax.kenya_compliance_via_digitax.overrides.server.stock_ledger_entry.on_submit"
+		]
+	},
 }
 
 

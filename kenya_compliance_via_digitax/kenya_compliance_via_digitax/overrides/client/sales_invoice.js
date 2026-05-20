@@ -3,7 +3,7 @@ const childDoctype = `${parentDoctype} Item`;
 const packagingUnitDoctypeName = "eTims Packaging Unit";
 const unitOfQuantityDoctypeName = "eTims Unit of Quantity";
 const taxationTypeDoctypeName = "eTims Taxation Type";
-const settingsDoctypeName = "eTims Settings";
+const settingsDoctypeName = "DigiTax eTims Settings";
 
 frappe.realtime.on("refresh_form", function (name) {
 	const currentForm = cur_frm;
@@ -95,7 +95,7 @@ function showSettingsModalAndExecute(title, settings, getCallArgs) {
 		title: __(title),
 		fields: [
 			{
-				label: __("Select eTims Settings"),
+				label: __("Select DigiTax eTims Settings"),
 				fieldname: "settings_name",
 				fieldtype: "Select",
 				options: settings.map((s) => ({
